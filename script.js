@@ -49,18 +49,13 @@ alarmSound.preload = "auto";
 alarmSound.loop = true;
 
 
-// iPhoneで音声再生が許可されたか
+// iPhoneで音声再生許可を取得済みか
 let audioUnlocked = false;
 
 
 // ========================================
 // iPhone / Safari用
-//
-// 赤ボタンを押した瞬間に
-// alarm.mp3を一度だけ再生開始して
-// すぐ停止する
-//
-// 実際のアラームはまだ鳴らさない
+// 音声再生許可
 // ========================================
 
 async function unlockAudio() {
@@ -70,7 +65,7 @@ async function unlockAudio() {
     }
 
 
-    // mutedはiPhoneでも使える
+    // 完全にミュート
     alarmSound.muted = true;
 
     alarmSound.currentTime = 0;
@@ -78,10 +73,12 @@ async function unlockAudio() {
 
     try {
 
+        // ユーザーが赤ボタンを押した瞬間に
+        // 一度だけ再生する
         await alarmSound.play();
 
 
-        // 再生許可が取れたらすぐ止める
+        // すぐ停止
         alarmSound.pause();
 
         alarmSound.currentTime = 0;
@@ -166,7 +163,7 @@ setButton.addEventListener(
 
 
 // ========================================
-// 表示更新
+// カウントダウン表示更新
 // ========================================
 
 function updateDisplay() {
@@ -178,7 +175,7 @@ function updateDisplay() {
 
 
 // ========================================
-// 赤いボタン
+// 赤い大型ボタン
 // ========================================
 
 startButton.addEventListener(
@@ -186,31 +183,19 @@ startButton.addEventListener(
 
     async function () {
 
-        // ====================================
-        // まず既存タイマーを停止
-        // ====================================
-
+        // 既存タイマー停止
         stopTimer();
 
 
-        // ====================================
         // 既存アラーム停止
-        // ====================================
-
         stopAlarm();
 
 
-        // ====================================
-        // iPhoneの音声再生許可を取る
-        // ====================================
-
+        // iPhoneで音声再生許可を取得
         await unlockAudio();
 
 
-        // ====================================
-        // 最初の秒数へ戻す
-        // ====================================
-
+        // 最初の秒数に戻す
         remainingSeconds =
             initialSeconds;
 
@@ -218,10 +203,7 @@ startButton.addEventListener(
         updateDisplay();
 
 
-        // ====================================
-        // 終了時刻
-        // ====================================
-
+        // 終了予定時刻
         endTime =
             Date.now() +
             initialSeconds * 1000;
@@ -279,8 +261,7 @@ startButton.addEventListener(
 
 // ========================================
 // Pause
-//
-// 表示はPauseだがReset
+// 表示はPauseだが実際にはReset
 // ========================================
 
 resetButton.addEventListener(
@@ -328,22 +309,19 @@ function stopTimer() {
 
 function playAlarm() {
 
-    // 念のため一度停止
+    // 必ず一度停止
     alarmSound.pause();
 
 
-    // 必ず音源の最初から
+    // 音源の先頭へ
     alarmSound.currentTime = 0;
 
 
-    // mute解除
+    // ミュート解除
     alarmSound.muted = false;
 
 
-    // ====================================
-    // ここで初めて実際に音を鳴らす
-    // ====================================
-
+    // 最初から警告音を鳴らす
     const playPromise =
         alarmSound.play();
 
