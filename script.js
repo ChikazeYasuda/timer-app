@@ -28,12 +28,19 @@ const startButton =
 // タイマー
 // ========================================
 
+// 最初に設定した秒数
 let initialSeconds = 0;
 
+
+// 現在の残り秒数
 let remainingSeconds = 0;
 
+
+// タイマー
 let timer = null;
 
+
+// 終了予定時刻
 let endTime = null;
 
 
@@ -44,8 +51,12 @@ let endTime = null;
 const alarmSound =
     new Audio("alarm.mp3");
 
+
+// 事前読み込み
 alarmSound.preload = "auto";
 
+
+// 繰り返し再生
 alarmSound.loop = true;
 
 
@@ -60,6 +71,7 @@ let audioUnlocked = false;
 
 async function unlockAudio() {
 
+    // すでに許可済みなら何もしない
     if (audioUnlocked) {
         return;
     }
@@ -68,24 +80,34 @@ async function unlockAudio() {
     // 完全にミュート
     alarmSound.muted = true;
 
+
+    // 音源の先頭
     alarmSound.currentTime = 0;
 
 
     try {
 
-        // ユーザーが赤ボタンを押した瞬間に
-        // 一度だけ再生する
+        // ====================================
+        // 赤ボタンを押した瞬間に
+        // 一度だけ音声を再生
+        // ====================================
+
         await alarmSound.play();
 
 
         // すぐ停止
         alarmSound.pause();
 
+
+        // 音源の先頭へ戻す
         alarmSound.currentTime = 0;
 
+
+        // ミュート解除
         alarmSound.muted = false;
 
 
+        // 許可取得完了
         audioUnlocked = true;
 
 
@@ -124,6 +146,10 @@ setButton.addEventListener(
             );
 
 
+        // ====================================
+        // 入力チェック
+        // ====================================
+
         if (
             !Number.isFinite(seconds) ||
             seconds < 1
@@ -138,6 +164,10 @@ setButton.addEventListener(
         }
 
 
+        // ====================================
+        // 最初の秒数
+        // ====================================
+
         initialSeconds =
             Math.floor(seconds);
 
@@ -149,11 +179,13 @@ setButton.addEventListener(
         updateDisplay();
 
 
+        // 設定画面を非表示
         setupScreen.classList.add(
             "hidden"
         );
 
 
+        // タイマー画面を表示
         timerScreen.classList.remove(
             "hidden"
         );
@@ -163,13 +195,14 @@ setButton.addEventListener(
 
 
 // ========================================
-// カウントダウン表示更新
+// カウントダウン表示
+// 小数点第2位まで
 // ========================================
 
 function updateDisplay() {
 
     countdown.textContent =
-        remainingSeconds;
+        remainingSeconds.toFixed(2);
 
 }
 
@@ -183,19 +216,31 @@ startButton.addEventListener(
 
     async function () {
 
-        // 既存タイマー停止
+        // ====================================
+        // 現在のタイマー停止
+        // ====================================
+
         stopTimer();
 
 
-        // 既存アラーム停止
+        // ====================================
+        // 現在のアラーム停止
+        // ====================================
+
         stopAlarm();
 
 
-        // iPhoneで音声再生許可を取得
+        // ====================================
+        // iPhone用音声再生許可
+        // ====================================
+
         await unlockAudio();
 
 
-        // 最初の秒数に戻す
+        // ====================================
+        // 最初の秒数へ戻す
+        // ====================================
+
         remainingSeconds =
             initialSeconds;
 
@@ -203,7 +248,10 @@ startButton.addEventListener(
         updateDisplay();
 
 
+        // ====================================
         // 終了予定時刻
+        // ====================================
+
         endTime =
             Date.now() +
             initialSeconds * 1000;
@@ -217,21 +265,29 @@ startButton.addEventListener(
             setInterval(
                 function () {
 
+                    // =================================
+                    // 現在時刻との差
+                    // =================================
+
                     const millisecondsLeft =
                         endTime -
                         Date.now();
 
 
+                    // =================================
+                    // 秒に変換
+                    // =================================
+
                     remainingSeconds =
                         Math.max(
                             0,
-
-                            Math.ceil(
-                                millisecondsLeft /
-                                1000
-                            )
+                            millisecondsLeft / 1000
                         );
 
+
+                    // =================================
+                    // 表示更新
+                    // =================================
 
                     updateDisplay();
 
@@ -241,10 +297,18 @@ startButton.addEventListener(
                     // =================================
 
                     if (
-                        remainingSeconds === 0
+                        remainingSeconds <= 0
                     ) {
 
+                        // 必ず0にする
+                        remainingSeconds = 0;
+
+
+                        updateDisplay();
+
+
                         stopTimer();
+
 
                         playAlarm();
 
@@ -252,7 +316,8 @@ startButton.addEventListener(
 
                 },
 
-                100
+                // 約0.01秒ごとに更新
+                10
             );
 
     }
@@ -261,7 +326,12 @@ startButton.addEventListener(
 
 // ========================================
 // Pause
-// 表示はPauseだが実際にはReset
+//
+// 表示はPauseだが，実際にはReset
+//
+// ・カウント停止
+// ・アラーム停止
+// ・最初の秒数へ戻る
 // ========================================
 
 resetButton.addEventListener(
@@ -309,11 +379,11 @@ function stopTimer() {
 
 function playAlarm() {
 
-    // 必ず一度停止
+    // 一度停止
     alarmSound.pause();
 
 
-    // 音源の先頭へ
+    // 必ず最初から
     alarmSound.currentTime = 0;
 
 
@@ -321,7 +391,10 @@ function playAlarm() {
     alarmSound.muted = false;
 
 
-    // 最初から警告音を鳴らす
+    // ====================================
+    // アラーム再生
+    // ====================================
+
     const playPromise =
         alarmSound.play();
 
