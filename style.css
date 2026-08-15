@@ -47,6 +47,8 @@ body {
 }
 
 
+/* 非表示 */
+
 .hidden {
     display: none;
 }
@@ -133,7 +135,8 @@ body {
 
 
 #setButton:active {
-    transform: translateY(3px);
+    transform:
+        translateY(3px);
 
     box-shadow:
         0 1px 0 #aaaaaa,
@@ -165,7 +168,8 @@ body {
 
     text-align: center;
 
-    font-variant-numeric: tabular-nums;
+    font-variant-numeric:
+        tabular-nums;
 
     text-shadow:
         0 2px 2px
@@ -220,7 +224,8 @@ body {
         inset -5px -5px 10px
         rgba(0, 0, 0, 0.22),
 
-        0 6px 0 #777777,
+        0 6px 0
+        #777777,
 
         0 13px 18px
         rgba(0, 0, 0, 0.30),
@@ -280,7 +285,8 @@ body {
 
     background-color: #555555;
 
-    transform: rotate(-20deg);
+    transform:
+        rotate(-20deg);
 }
 
 
@@ -343,7 +349,8 @@ body {
         inset 0 -18px 23px
         rgba(0, 0, 0, 0.9),
 
-        0 10px 0 #080808,
+        0 10px 0
+        #080808,
 
         0 15px 18px
         rgba(0, 0, 0, 0.50);
@@ -404,7 +411,8 @@ body {
         inset -15px 0 20px
         rgba(55, 0, 0, 0.32),
 
-        0 18px 0 #6b0000,
+        0 18px 0
+        #6b0000,
 
         0 22px 9px
         rgba(0, 0, 0, 0.55),
@@ -412,7 +420,8 @@ body {
         0 31px 27px
         rgba(0, 0, 0, 0.26);
 
-    transform: translateY(-9px);
+    transform:
+        translateY(-9px);
 
     transition:
         transform 0.07s ease,
@@ -423,9 +432,7 @@ body {
 }
 
 
-/* ======================================== */
-/* 赤ボタン表面の光沢 */
-/* ======================================== */
+/* ボタン表面の光沢 */
 
 .startButton::before {
     content: "";
@@ -450,17 +457,17 @@ body {
             rgba(255, 255, 255, 0) 77%
         );
 
-    transform: rotate(-15deg);
+    transform:
+        rotate(-15deg);
 
-    filter: blur(1px);
+    filter:
+        blur(1px);
 
     pointer-events: none;
 }
 
 
-/* ======================================== */
 /* 赤ボタン外周 */
-/* ======================================== */
 
 .startButton::after {
     content: "";
@@ -483,21 +490,19 @@ body {
 }
 
 
-/* ======================================== */
-/* PC：マウスを乗せた時 */
-/* ======================================== */
+/* マウスを乗せた時 */
 
 .startButton:hover {
-    filter: brightness(1.04);
+    filter:
+        brightness(1.04);
 }
 
 
-/* ======================================== */
-/* 赤ボタンを押した時 */
-/* ======================================== */
+/* 押した時 */
 
 .startButton:active {
-    transform: translateY(8px);
+    transform:
+        translateY(8px);
 
     background:
 
@@ -525,7 +530,8 @@ body {
         inset 0 -8px 15px
         rgba(255, 40, 40, 0.10),
 
-        0 2px 0 #600000,
+        0 2px 0
+        #600000,
 
         0 4px 5px
         rgba(0, 0, 0, 0.48);
@@ -549,7 +555,6 @@ body {
     background:
         linear-gradient(
             180deg,
-
             #ffffff 0%,
             #ededed 45%,
             #d2d2d2 100%
@@ -567,7 +572,8 @@ body {
         inset 0 2px 2px
         rgba(255, 255, 255, 0.95),
 
-        0 5px 0 #999999,
+        0 5px 0
+        #999999,
 
         0 8px 10px
         rgba(0, 0, 0, 0.20);
@@ -581,13 +587,15 @@ body {
 
 
 .pauseButton:active {
-    transform: translateY(4px);
+    transform:
+        translateY(4px);
 
     box-shadow:
         inset 0 2px 4px
         rgba(0, 0, 0, 0.15),
 
-        0 1px 0 #888888,
+        0 1px 0
+        #888888,
 
         0 3px 5px
         rgba(0, 0, 0, 0.18);
@@ -637,7 +645,7 @@ body {
 
 
     /* ==================================== */
-    /* スマホ画面内に固定 */
+    /* 画面をスマホの表示領域に固定 */
     /* ==================================== */
 
     .screen {
@@ -656,7 +664,7 @@ body {
 
 
     /* ==================================== */
-    /* タップ操作 */
+    /* タップする要素 */
     /* ==================================== */
 
     button {
@@ -673,21 +681,15 @@ body {
 
 
     /* ==================================== */
-    /* カウントダウン */
+    /* スマホ用サイズ */
     /* ==================================== */
 
     #countdown {
         margin-bottom: 38px;
 
-        font-size: 82px;
-
-        white-space: nowrap;
+        font-size: 95px;
     }
 
-
-    /* ==================================== */
-    /* 赤ボタン周辺 */
-    /* ==================================== */
 
     .metalPlate {
         width: 310px;
@@ -732,10 +734,6 @@ body {
         height: 2px;
     }
 
-
-    /* ==================================== */
-    /* Pause */
-    /* ==================================== */
 
     .pauseButton {
         width: 145px;
