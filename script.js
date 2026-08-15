@@ -25,98 +25,126 @@ const startButton =
 
 
 // ========================================
-// タイマー用変数
+// タイマー関連
 // ========================================
 
-// 最初に設定した秒数
 let initialSeconds = 0;
 
-
-// 現在の残り秒数
 let remainingSeconds = 0;
 
-
-// setIntervalを保存
 let timer = null;
 
-
-// タイマー終了予定時刻
 let endTime = null;
 
 
 // ========================================
-// アラーム音
+// 音声関連
 // ========================================
 
-const alarmSound =
-    new Audio(
-        "low_emergency_alarm(1).mp3"
-    );
+let audioContext = null;
 
+let alarmBuffer = null;
 
-// アラームを繰り返す
-alarmSound.loop = true;
+let alarmSource = null;
 
 
 // ========================================
-// iPhone / Safari用
-// 音声再生をあらかじめ許可させる
+// MP3を読み込む
 // ========================================
 
-let audioUnlocked = false;
+async function loadAlarmSound() {
+
+    try {
+
+        const response =
+            await fetch(
+                "low_emergency_alarm(1).mp3"
+            );
 
 
-function unlockAudio() {
+        const arrayBuffer =
+            await response.arrayBuffer();
 
-    if (audioUnlocked) {
-        return;
+
+        // AudioContextがまだ無ければ作成
+        if (audioContext === null) {
+
+            audioContext =
+                new (
+                    window.AudioContext ||
+                    window.webkitAudioContext
+                )();
+
+        }
+
+
+        // MP3をWeb Audio用に変換
+        alarmBuffer =
+            await audioContext.decodeAudioData(
+                arrayBuffer
+            );
+
+
+        console.log(
+            "アラーム音を読み込みました"
+        );
+
     }
 
+    catch (error) {
 
-    const oldVolume =
-        alarmSound.volume;
-
-
-    // 無音状態にする
-    alarmSound.volume = 0;
-
-
-    const playPromise =
-        alarmSound.play();
-
-
-    if (
-        playPromise !== undefined
-    ) {
-
-        playPromise
-            .then(function () {
-
-                alarmSound.pause();
-
-                alarmSound.currentTime = 0;
-
-                alarmSound.volume =
-                    oldVolume;
-
-                audioUnlocked = true;
-
-            })
-
-            .catch(function () {
-
-                alarmSound.volume =
-                    oldVolume;
-
-            });
+        console.error(
+            "アラーム音の読み込みに失敗しました",
+            error
+        );
 
     }
 
 }
 
 
+// ページを開いた時点で読み込み開始
+loadAlarmSound();
+
+
 // ========================================
-// 秒数を設定
+// AudioContextを有効化
+//
+// iPhone対策として重要
+// ========================================
+
+async function prepareAudio() {
+
+    if (audioContext === null) {
+
+        audioContext =
+            new (
+                window.AudioContext ||
+                window.webkitAudioContext
+            )();
+
+    }
+
+
+    if (
+        audioContext.state === "suspended"
+    ) {
+
+        await audioContext.resume();
+
+    }
+
+
+    console.log(
+        "AudioContext:",
+        audioContext.state
+    );
+
+}
+
+
+// ========================================
+// 秒数設定
 // ========================================
 
 setButton.addEventListener(
@@ -129,10 +157,6 @@ setButton.addEventListener(
             );
 
 
-        // ====================================
-        // 入力チェック
-        // ====================================
-
         if (
             !Number.isFinite(seconds) ||
             seconds < 1
@@ -143,10 +167,10 @@ setButton.addEventListener(
             );
 
             return;
+
         }
 
 
-        // 小数点以下を切り捨て
         initialSeconds =
             Math.floor(seconds);
 
@@ -158,13 +182,11 @@ setButton.addEventListener(
         updateDisplay();
 
 
-        // 設定画面を非表示
         setupScreen.classList.add(
             "hidden"
         );
 
 
-        // タイマー画面を表示
         timerScreen.classList.remove(
             "hidden"
         );
@@ -174,7 +196,7 @@ setButton.addEventListener(
 
 
 // ========================================
-// カウントダウン表示更新
+// 表示更新
 // ========================================
 
 function updateDisplay() {
@@ -186,43 +208,36 @@ function updateDisplay() {
 
 
 // ========================================
-// 赤い大型ボタン
+// 赤ボタン
 //
-// 押したら
-//
-// 1. 今のタイマーを停止
-// 2. アラーム停止
-// 3. 最初の秒数へ戻る
-// 4. カウントダウン開始
+// 最初からカウントダウン開始
 // ========================================
 
 startButton.addEventListener(
     "click",
-    function () {
+    async function () {
 
-        // iPhoneなどで音声を有効化
-        unlockAudio();
+        // ====================================
+        // iPhoneで最重要
+        //
+        // ユーザーが赤ボタンを押した瞬間に
+        // AudioContextを有効化する
+        // ====================================
+
+        await prepareAudio();
 
 
-        // 既存タイマー停止
         stopTimer();
 
-
-        // アラーム停止
         stopAlarm();
 
 
-        // 最初の秒数へ戻す
         remainingSeconds =
             initialSeconds;
 
 
         updateDisplay();
 
-
-        // ====================================
-        // 終了予定時刻を決定
-        // ====================================
 
         endTime =
             Date.now() +
@@ -237,13 +252,11 @@ startButton.addEventListener(
             setInterval(
                 function () {
 
-                    // 現在時刻との差
                     const millisecondsLeft =
                         endTime -
                         Date.now();
 
 
-                    // 残り秒数
                     remainingSeconds =
                         Math.max(
                             0,
@@ -259,7 +272,7 @@ startButton.addEventListener(
 
 
                     // =================================
-                    // 0秒になった
+                    // 0秒
                     // =================================
 
                     if (
@@ -284,12 +297,7 @@ startButton.addEventListener(
 // ========================================
 // Pauseボタン
 //
-// 表示はPauseだが
 // 実際にはReset
-//
-// ・タイマー停止
-// ・警告音停止
-// ・最初の秒数へ戻す
 // ========================================
 
 resetButton.addEventListener(
@@ -297,7 +305,6 @@ resetButton.addEventListener(
     function () {
 
         stopTimer();
-
 
         stopAlarm();
 
@@ -335,31 +342,67 @@ function stopTimer() {
 // アラーム再生
 // ========================================
 
-function playAlarm() {
+async function playAlarm() {
 
-    alarmSound.currentTime = 0;
-
-
-    const playPromise =
-        alarmSound.play();
-
-
+    // AudioContextが止まっていたら再開
     if (
-        playPromise !== undefined
+        audioContext.state === "suspended"
     ) {
 
-        playPromise.catch(
-            function (error) {
+        try {
 
-                console.log(
-                    "アラームを再生できませんでした。",
-                    error
-                );
+            await audioContext.resume();
 
-            }
-        );
+        }
+
+        catch (error) {
+
+            console.error(
+                error
+            );
+
+        }
 
     }
+
+
+    // 音源がまだ読み込まれていない場合
+    if (
+        alarmBuffer === null
+    ) {
+
+        console.log(
+            "アラーム音を読み込み中です"
+        );
+
+        return;
+
+    }
+
+
+    // 以前の音を停止
+    stopAlarm();
+
+
+    // 新しい音源を作る
+    alarmSource =
+        audioContext.createBufferSource();
+
+
+    alarmSource.buffer =
+        alarmBuffer;
+
+
+    // Resetを押すまで繰り返す
+    alarmSource.loop = true;
+
+
+    alarmSource.connect(
+        audioContext.destination
+    );
+
+
+    alarmSource.start(0);
 
 }
 
@@ -370,9 +413,27 @@ function playAlarm() {
 
 function stopAlarm() {
 
-    alarmSound.pause();
+    if (
+        alarmSource !== null
+    ) {
+
+        try {
+
+            alarmSource.stop();
+
+        }
+
+        catch (error) {
+
+            // すでに停止している場合は無視
+
+        }
 
 
-    alarmSound.currentTime = 0;
+        alarmSource.disconnect();
+
+        alarmSource = null;
+
+    }
 
 }
