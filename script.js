@@ -50,7 +50,7 @@ let endTime = null;
 
 const alarmSound =
     new Audio(
-        "low_emergency_alarm(1).mp3"
+        "alarm.mp3"
     );
 
 
