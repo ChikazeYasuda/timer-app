@@ -141,7 +141,7 @@ startButton.addEventListener(
         // ただしほぼ聞こえない音量
         // --------------------------------
 
-        alarmSound.volume = 0.000000;
+        alarmSound.volume = 0.01;
 
 
         const playPromise =
