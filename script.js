@@ -28,19 +28,12 @@ const startButton =
 // タイマー用変数
 // ========================================
 
-// 最初に設定した秒数
 let initialSeconds = 0;
 
-
-// 現在の残り秒数
 let remainingSeconds = 0;
 
-
-// setIntervalを保存
 let timer = null;
 
-
-// タイマー終了予定時刻
 let endTime = null;
 
 
@@ -48,71 +41,10 @@ let endTime = null;
 // アラーム音
 // ========================================
 
-const alarmSound =
-    new Audio(
-        "alarm.mp3"
-    );
+const alarmSound = new Audio("alarm.mp3");
 
-
-// アラームを繰り返す
 alarmSound.loop = true;
-
-
-// ========================================
-// iPhone / Safari用
-// 音声再生をあらかじめ許可させる
-// ========================================
-
-let audioUnlocked = false;
-
-
-function unlockAudio() {
-
-    if (audioUnlocked) {
-        return;
-    }
-
-
-    const oldVolume =
-        alarmSound.volume;
-
-
-    // 無音状態にする
-    alarmSound.volume = 0;
-
-
-    const playPromise =
-        alarmSound.play();
-
-
-    if (
-        playPromise !== undefined
-    ) {
-
-        playPromise
-            .then(function () {
-
-                alarmSound.pause();
-
-                alarmSound.currentTime = 0;
-
-                alarmSound.volume =
-                    oldVolume;
-
-                audioUnlocked = true;
-
-            })
-
-            .catch(function () {
-
-                alarmSound.volume =
-                    oldVolume;
-
-            });
-
-    }
-
-}
+alarmSound.preload = "auto";
 
 
 // ========================================
@@ -124,14 +56,8 @@ setButton.addEventListener(
     function () {
 
         const seconds =
-            Number(
-                secondsInput.value
-            );
+            Number(secondsInput.value);
 
-
-        // ====================================
-        // 入力チェック
-        // ====================================
 
         if (
             !Number.isFinite(seconds) ||
@@ -146,7 +72,6 @@ setButton.addEventListener(
         }
 
 
-        // 小数点以下を切り捨て
         initialSeconds =
             Math.floor(seconds);
 
@@ -158,13 +83,11 @@ setButton.addEventListener(
         updateDisplay();
 
 
-        // 設定画面を非表示
         setupScreen.classList.add(
             "hidden"
         );
 
 
-        // タイマー画面を表示
         timerScreen.classList.remove(
             "hidden"
         );
@@ -186,33 +109,67 @@ function updateDisplay() {
 
 
 // ========================================
-// 赤い大型ボタン
-//
-// 押したら
-//
-// 1. 今のタイマーを停止
-// 2. アラーム停止
-// 3. 最初の秒数へ戻る
-// 4. カウントダウン開始
+// 赤いボタン
 // ========================================
 
 startButton.addEventListener(
     "click",
     function () {
 
-        // iPhoneなどで音声を有効化
-        unlockAudio();
+        // --------------------------------
+        // 今動いているタイマーを停止
+        // --------------------------------
 
-
-        // 既存タイマー停止
         stopTimer();
 
 
-        // アラーム停止
-        stopAlarm();
+        // --------------------------------
+        // 前の音声を停止
+        // --------------------------------
+
+        alarmSound.pause();
+
+        alarmSound.currentTime = 0;
 
 
+        // --------------------------------
+        // 重要
+        //
+        // ボタンを押した瞬間に
+        // 音声再生を開始する
+        //
+        // ただしほぼ聞こえない音量
+        // --------------------------------
+
+        alarmSound.volume = 0.000000;
+
+
+        const playPromise =
+            alarmSound.play();
+
+
+        if (
+            playPromise !== undefined
+        ) {
+
+            playPromise.catch(
+                function (error) {
+
+                    console.error(
+                        "音声再生の準備に失敗しました。",
+                        error
+                    );
+
+                }
+            );
+
+        }
+
+
+        // --------------------------------
         // 最初の秒数へ戻す
+        // --------------------------------
+
         remainingSeconds =
             initialSeconds;
 
@@ -220,30 +177,28 @@ startButton.addEventListener(
         updateDisplay();
 
 
-        // ====================================
-        // 終了予定時刻を決定
-        // ====================================
+        // --------------------------------
+        // 終了予定時刻
+        // --------------------------------
 
         endTime =
             Date.now() +
             initialSeconds * 1000;
 
 
-        // ====================================
-        // タイマー開始
-        // ====================================
+        // --------------------------------
+        // カウントダウン開始
+        // --------------------------------
 
         timer =
             setInterval(
                 function () {
 
-                    // 現在時刻との差
                     const millisecondsLeft =
                         endTime -
                         Date.now();
 
 
-                    // 残り秒数
                     remainingSeconds =
                         Math.max(
                             0,
@@ -258,9 +213,9 @@ startButton.addEventListener(
                     updateDisplay();
 
 
-                    // =================================
-                    // 0秒になった
-                    // =================================
+                    // ========================
+                    // 0秒
+                    // ========================
 
                     if (
                         remainingSeconds === 0
@@ -284,12 +239,7 @@ startButton.addEventListener(
 // ========================================
 // Pauseボタン
 //
-// 表示はPauseだが
 // 実際にはReset
-//
-// ・タイマー停止
-// ・警告音停止
-// ・最初の秒数へ戻す
 // ========================================
 
 resetButton.addEventListener(
@@ -297,7 +247,6 @@ resetButton.addEventListener(
     function () {
 
         stopTimer();
-
 
         stopAlarm();
 
@@ -332,34 +281,17 @@ function stopTimer() {
 
 
 // ========================================
-// アラーム再生
+// 0秒になったとき
 // ========================================
 
 function playAlarm() {
 
+    // すでに再生中なので，
+    // 新しくplay()はしない
+
     alarmSound.currentTime = 0;
 
-
-    const playPromise =
-        alarmSound.play();
-
-
-    if (
-        playPromise !== undefined
-    ) {
-
-        playPromise.catch(
-            function (error) {
-
-                console.log(
-                    "アラームを再生できませんでした。",
-                    error
-                );
-
-            }
-        );
-
-    }
+    alarmSound.volume = 1.0;
 
 }
 
@@ -372,7 +304,8 @@ function stopAlarm() {
 
     alarmSound.pause();
 
-
     alarmSound.currentTime = 0;
+
+    alarmSound.volume = 1.0;
 
 }
