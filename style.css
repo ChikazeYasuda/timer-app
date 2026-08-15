@@ -1,0 +1,728 @@
+/* ======================================== */
+/* ページ全体 */
+/* ======================================== */
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+
+    width: 100%;
+    min-height: 100%;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background:
+        linear-gradient(
+            180deg,
+            #f8f8f8 0%,
+            #eeeeee 55%,
+            #e2e2e2 100%
+        );
+
+    color: #222222;
+}
+
+
+/* ======================================== */
+/* 共通画面 */
+/* ======================================== */
+
+.screen {
+    width: 100%;
+    min-height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+
+    box-sizing: border-box;
+
+    padding: 30px;
+}
+
+
+/* 非表示 */
+
+.hidden {
+    display: none;
+}
+
+
+/* ======================================== */
+/* 秒数設定画面 */
+/* ======================================== */
+
+#setupScreen h1 {
+    margin: 0 0 15px 0;
+
+    font-size: 55px;
+}
+
+
+#setupScreen p {
+    margin: 0 0 25px 0;
+
+    font-size: 18px;
+
+    text-align: center;
+}
+
+
+#secondsInput {
+    width: 220px;
+
+    padding: 15px;
+
+    font-size: 28px;
+
+    text-align: center;
+
+    border:
+        1px solid
+        #bbbbbb;
+
+    border-radius: 10px;
+
+    background-color: white;
+
+    box-sizing: border-box;
+
+    outline: none;
+}
+
+
+#secondsInput:focus {
+    border-color: #777777;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(0, 0, 0, 0.08);
+}
+
+
+#setButton {
+    margin-top: 20px;
+
+    padding:
+        15px
+        35px;
+
+    font-size: 20px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #ffffff,
+            #e4e4e4
+        );
+
+    cursor: pointer;
+
+    box-shadow:
+        0 4px 0 #bbbbbb,
+        0 7px 12px rgba(0, 0, 0, 0.18);
+
+    transition:
+        transform 0.08s,
+        box-shadow 0.08s;
+}
+
+
+#setButton:active {
+    transform:
+        translateY(3px);
+
+    box-shadow:
+        0 1px 0 #aaaaaa,
+        0 3px 5px rgba(0, 0, 0, 0.18);
+}
+
+
+/* ======================================== */
+/* タイマー画面 */
+/* ======================================== */
+
+#timerScreen {
+    justify-content: center;
+}
+
+
+/* ======================================== */
+/* カウントダウン表示 */
+/* ======================================== */
+
+#countdown {
+    margin-bottom: 45px;
+
+    font-size: 130px;
+
+    font-weight: 700;
+
+    line-height: 1;
+
+    text-align: center;
+
+    font-variant-numeric:
+        tabular-nums;
+
+    text-shadow:
+        0 2px 2px
+        rgba(255, 255, 255, 0.8);
+}
+
+
+/* ======================================== */
+/* ボタンユニット全体 */
+/* ======================================== */
+
+.buttonAssembly {
+    perspective: 900px;
+}
+
+
+/* ======================================== */
+/* 金属製の取付プレート */
+/* ======================================== */
+
+.metalPlate {
+    position: relative;
+
+    width: 365px;
+    height: 365px;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 38px;
+
+    border:
+        2px solid
+        #888888;
+
+    background:
+
+        /* 金属表面の細かな光沢 */
+        linear-gradient(
+            145deg,
+
+            #fafafa 0%,
+            #c7c7c7 16%,
+            #eeeeee 32%,
+            #a6a6a6 52%,
+            #dedede 72%,
+            #989898 100%
+        );
+
+    box-shadow:
+
+        /* プレート上側の反射 */
+        inset 4px 4px 8px
+        rgba(255, 255, 255, 0.85),
+
+        /* プレート下側 */
+        inset -5px -5px 10px
+        rgba(0, 0, 0, 0.22),
+
+        /* 厚み */
+        0 6px 0
+        #777777,
+
+        /* 下への影 */
+        0 13px 18px
+        rgba(0, 0, 0, 0.30),
+
+        0 28px 45px
+        rgba(0, 0, 0, 0.18);
+}
+
+
+/* ======================================== */
+/* ネジ */
+/* ======================================== */
+
+.screw {
+    position: absolute;
+
+    width: 19px;
+    height: 19px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at 35% 28%,
+
+            #ffffff 0%,
+            #d0d0d0 23%,
+            #949494 55%,
+            #555555 82%,
+            #333333 100%
+        );
+
+    box-shadow:
+
+        inset 1px 1px 2px
+        rgba(255, 255, 255, 0.9),
+
+        inset -1px -1px 2px
+        rgba(0, 0, 0, 0.35),
+
+        1px 2px 3px
+        rgba(0, 0, 0, 0.35);
+}
+
+
+/* ネジの溝 */
+
+.screw::after {
+    content: "";
+
+    position: absolute;
+
+    top: 8px;
+    left: 3px;
+
+    width: 13px;
+    height: 3px;
+
+    border-radius: 2px;
+
+    background-color: #555555;
+
+    box-shadow:
+        0 1px 1px
+        rgba(255, 255, 255, 0.3);
+
+    transform:
+        rotate(-20deg);
+}
+
+
+/* ネジ位置 */
+
+.screwTopLeft {
+    top: 22px;
+    left: 22px;
+}
+
+
+.screwTopRight {
+    top: 22px;
+    right: 22px;
+}
+
+
+.screwBottomLeft {
+    bottom: 22px;
+    left: 22px;
+}
+
+
+.screwBottomRight {
+    bottom: 22px;
+    right: 22px;
+}
+
+
+/* ======================================== */
+/* 黒いボタンベゼル */
+/* ======================================== */
+
+.buttonBezel {
+    width: 300px;
+    height: 300px;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 50%;
+
+    border:
+        5px solid
+        #101010;
+
+    background:
+        radial-gradient(
+            circle at 40% 30%,
+
+            #626262 0%,
+            #414141 25%,
+            #292929 52%,
+            #151515 76%,
+            #050505 100%
+        );
+
+    box-shadow:
+
+        inset 0 10px 15px
+        rgba(255, 255, 255, 0.13),
+
+        inset 0 -18px 23px
+        rgba(0, 0, 0, 0.9),
+
+        0 10px 0
+        #080808,
+
+        0 15px 18px
+        rgba(0, 0, 0, 0.50);
+}
+
+
+/* ======================================== */
+/* 赤いボタン本体 */
+/* ======================================== */
+
+.startButton {
+    position: relative;
+
+    width: 248px;
+    height: 248px;
+
+    padding: 0;
+
+    border-radius: 50%;
+
+    border:
+        5px solid
+        #790000;
+
+    cursor: pointer;
+
+    outline: none;
+
+    background:
+
+        /* 表面の大きな反射 */
+        radial-gradient(
+            ellipse at 37% 21%,
+
+            rgba(255, 255, 255, 0.70) 0%,
+            rgba(255, 255, 255, 0.28) 14%,
+            rgba(255, 255, 255, 0) 36%
+        ),
+
+        /* 赤い樹脂本体 */
+        radial-gradient(
+            circle at 44% 34%,
+
+            #ff6666 0%,
+            #f32a2a 18%,
+            #e30e0e 35%,
+            #c40000 57%,
+            #9d0000 78%,
+            #680000 100%
+        );
+
+    box-shadow:
+
+        /* 上側の光 */
+        inset 0 17px 23px
+        rgba(255, 255, 255, 0.30),
+
+        /* 下側の影 */
+        inset 0 -28px 35px
+        rgba(65, 0, 0, 0.65),
+
+        /* 左側 */
+        inset 13px 0 18px
+        rgba(255, 80, 80, 0.13),
+
+        /* 右側 */
+        inset -15px 0 20px
+        rgba(55, 0, 0, 0.32),
+
+        /* ボタンの厚み */
+        0 18px 0
+        #6b0000,
+
+        /* 接触部の影 */
+        0 22px 9px
+        rgba(0, 0, 0, 0.55),
+
+        /* 大きな影 */
+        0 31px 27px
+        rgba(0, 0, 0, 0.26);
+
+    transform:
+        translateY(-9px);
+
+    transition:
+        transform 0.07s ease,
+        box-shadow 0.07s ease,
+        filter 0.07s ease;
+}
+
+
+/* ======================================== */
+/* ボタン表面の強い反射 */
+/* ======================================== */
+
+.startButton::before {
+    content: "";
+
+    position: absolute;
+
+    top: 24px;
+    left: 42px;
+
+    width: 132px;
+    height: 61px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            ellipse,
+
+            rgba(255, 255, 255, 0.80) 0%,
+            rgba(255, 255, 255, 0.40) 30%,
+            rgba(255, 255, 255, 0.10) 55%,
+            rgba(255, 255, 255, 0) 77%
+        );
+
+    transform:
+        rotate(-15deg);
+
+    filter:
+        blur(1px);
+
+    pointer-events: none;
+}
+
+
+/* ======================================== */
+/* 赤ボタン外周の反射 */
+/* ======================================== */
+
+.startButton::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 8px;
+
+    border-radius: 50%;
+
+    border:
+        2px solid
+        rgba(255, 255, 255, 0.22);
+
+    box-shadow:
+        inset 0 0 6px
+        rgba(255, 255, 255, 0.12);
+
+    pointer-events: none;
+}
+
+
+/* ======================================== */
+/* マウスを乗せた時 */
+/* ======================================== */
+
+.startButton:hover {
+    filter:
+        brightness(1.04);
+}
+
+
+/* ======================================== */
+/* 赤ボタンを押し込んだ状態 */
+/* ======================================== */
+
+.startButton:active {
+    transform:
+        translateY(8px);
+
+    background:
+
+        radial-gradient(
+            ellipse at 38% 24%,
+
+            rgba(255, 255, 255, 0.42) 0%,
+            rgba(255, 255, 255, 0.12) 18%,
+            rgba(255, 255, 255, 0) 39%
+        ),
+
+        radial-gradient(
+            circle at 45% 40%,
+
+            #ed3030 0%,
+            #d90c0c 30%,
+            #b40000 59%,
+            #7a0000 100%
+        );
+
+    box-shadow:
+
+        /* 押し込んだときは上から暗くなる */
+        inset 0 12px 26px
+        rgba(75, 0, 0, 0.42),
+
+        inset 0 -8px 15px
+        rgba(255, 40, 40, 0.10),
+
+        /* 厚みがほぼ消える */
+        0 2px 0
+        #600000,
+
+        /* 影も小さくなる */
+        0 4px 5px
+        rgba(0, 0, 0, 0.48);
+}
+
+
+/* ======================================== */
+/* Pauseボタン */
+/* ======================================== */
+
+.pauseButton {
+    width: 170px;
+    height: 58px;
+
+    margin-top: 55px;
+
+    border:
+        1px solid
+        #999999;
+
+    border-radius: 8px;
+
+    background:
+        linear-gradient(
+            180deg,
+
+            #ffffff 0%,
+            #ededed 45%,
+            #d2d2d2 100%
+        );
+
+    color: #222222;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    box-shadow:
+
+        inset 0 2px 2px
+        rgba(255, 255, 255, 0.95),
+
+        0 5px 0
+        #999999,
+
+        0 8px 10px
+        rgba(0, 0, 0, 0.20);
+
+    transition:
+        transform 0.07s,
+        box-shadow 0.07s;
+}
+
+
+/* Pauseボタンを押した状態 */
+
+.pauseButton:active {
+    transform:
+        translateY(4px);
+
+    box-shadow:
+
+        inset 0 2px 4px
+        rgba(0, 0, 0, 0.15),
+
+        0 1px 0
+        #888888,
+
+        0 3px 5px
+        rgba(0, 0, 0, 0.18);
+}
+
+
+/* ======================================== */
+/* スマートフォン対応 */
+/* ======================================== */
+
+@media (max-width: 600px) {
+
+    .screen {
+        padding: 20px;
+    }
+
+
+    #countdown {
+        margin-bottom: 38px;
+
+        font-size: 95px;
+    }
+
+
+    .metalPlate {
+        width: 310px;
+        height: 310px;
+
+        border-radius: 32px;
+    }
+
+
+    .buttonBezel {
+        width: 255px;
+        height: 255px;
+    }
+
+
+    .startButton {
+        width: 210px;
+        height: 210px;
+    }
+
+
+    .startButton::before {
+        top: 20px;
+        left: 36px;
+
+        width: 110px;
+        height: 50px;
+    }
+
+
+    .screw {
+        width: 15px;
+        height: 15px;
+    }
+
+
+    .screw::after {
+        top: 6px;
+        left: 3px;
+
+        width: 9px;
+        height: 2px;
+    }
+
+
+    .pauseButton {
+        width: 145px;
+        height: 52px;
+
+        margin-top: 45px;
+
+        font-size: 18px;
+    }
+
+}

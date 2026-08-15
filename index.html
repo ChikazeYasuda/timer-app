@@ -1,26 +1,130 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <title>Timer App</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 </head>
 
 <body>
 
-    <h1>Timer</h1>
+    <!-- ======================================== -->
+    <!-- 秒数設定画面 -->
+    <!-- ======================================== -->
 
-    <div id="time">00:00</div>
+    <div
+        id="setupScreen"
+        class="screen"
+    >
 
-<input id="minutes" type="number" min="0" placeholder="分">
-<input id="seconds" type="number" min="0" max="59" placeholder="秒">
+        <h1>Timer</h1>
 
-<button id="startButton">Start</button>
-<button id="pauseButton">Pause</button>
-<button id="resetButton">Reset</button>
+        <p>
+            カウントダウンする秒数を入力してください
+        </p>
+
+        <input
+            id="secondsInput"
+            type="number"
+            min="1"
+            step="1"
+            placeholder="秒"
+        >
+
+        <button id="setButton">
+            タイマーへ
+        </button>
+
+    </div>
+
+
+    <!-- ======================================== -->
+    <!-- タイマー画面 -->
+    <!-- ======================================== -->
+
+    <div
+        id="timerScreen"
+        class="screen hidden"
+    >
+
+        <!-- 残り秒数 -->
+        <div id="countdown">
+            0
+        </div>
+
+
+        <!-- ==================================== -->
+        <!-- 大型赤ボタン -->
+        <!-- ==================================== -->
+
+        <div class="buttonAssembly">
+
+            <!-- 金属プレート -->
+            <div class="metalPlate">
+
+                <!-- 4本のネジ -->
+                <div
+                    class="screw screwTopLeft"
+                ></div>
+
+                <div
+                    class="screw screwTopRight"
+                ></div>
+
+                <div
+                    class="screw screwBottomLeft"
+                ></div>
+
+                <div
+                    class="screw screwBottomRight"
+                ></div>
+
+
+                <!-- 黒いボタン台座 -->
+                <div class="buttonBezel">
+
+                    <!-- 赤いStartボタン -->
+                    <button
+                        id="startButton"
+                        class="startButton"
+                        aria-label="Start"
+                    ></button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==================================== -->
+        <!-- Pauseボタン -->
+        <!-- 実際の機能はReset -->
+        <!-- ==================================== -->
+
+        <button
+            id="resetButton"
+            class="pauseButton"
+        >
+            Pause
+        </button>
+
+    </div>
+
 
     <script src="script.js"></script>
+
 </body>
+
 </html>
