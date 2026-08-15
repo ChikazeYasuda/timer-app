@@ -4,11 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Timer App</title>
+
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
     <h1>Timer</h1>
 
+    <div id="time">00:00</div>
+
+<input id="minutes" type="number" min="0" placeholder="分">
+<input id="seconds" type="number" min="0" max="59" placeholder="秒">
+
+<button id="startButton">Start</button>
+<button id="pauseButton">Pause</button>
+<button id="resetButton">Reset</button>
+
+    <script src="script.js"></script>
 </body>
 </html>
