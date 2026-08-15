@@ -25,117 +25,87 @@ const startButton =
 
 
 // ========================================
-// タイマー用変数
+// タイマー
 // ========================================
 
-// 最初に設定した秒数
 let initialSeconds = 0;
 
-// 現在の残り秒数
 let remainingSeconds = 0;
 
-// setInterval
 let timer = null;
 
-// 終了予定時刻
 let endTime = null;
 
 
 // ========================================
-// アラーム音
+// アラーム
 // ========================================
 
-// GitHub上にある alarm.mp3 を使用
 const alarmSound =
     new Audio("alarm.mp3");
 
-
-// 音声を事前読み込み
 alarmSound.preload = "auto";
 
-
-// 繰り返し再生
 alarmSound.loop = true;
 
 
-// ========================================
-// Web Audio API
-// iPhoneの音量制御対策
-// ========================================
-
-let audioContext = null;
-
-let sourceNode = null;
-
-let gainNode = null;
+// iPhoneで音声再生が許可されたか
+let audioUnlocked = false;
 
 
 // ========================================
-// 音声システムを準備
+// iPhone / Safari用
+//
+// 赤ボタンを押した瞬間に
+// alarm.mp3を一度だけ再生開始して
+// すぐ停止する
+//
+// 実際のアラームはまだ鳴らさない
 // ========================================
 
-function prepareAudio() {
+async function unlockAudio() {
 
-    // 初回だけ作成
-    if (audioContext === null) {
-
-        audioContext =
-            new (
-                window.AudioContext ||
-                window.webkitAudioContext
-            )();
+    if (audioUnlocked) {
+        return;
+    }
 
 
-        // alarmSoundをWeb Audio APIへ接続
-        sourceNode =
-            audioContext.createMediaElementSource(
-                alarmSound
-            );
+    // mutedはiPhoneでも使える
+    alarmSound.muted = true;
+
+    alarmSound.currentTime = 0;
 
 
-        // 音量を制御するGainNode
-        gainNode =
-            audioContext.createGain();
+    try {
+
+        await alarmSound.play();
 
 
-        // alarm.mp3
-        // ↓
-        // GainNode
-        // ↓
-        // スピーカー
-        sourceNode.connect(
-            gainNode
-        );
+        // 再生許可が取れたらすぐ止める
+        alarmSound.pause();
+
+        alarmSound.currentTime = 0;
+
+        alarmSound.muted = false;
 
 
-        gainNode.connect(
-            audioContext.destination
-        );
+        audioUnlocked = true;
 
 
-        // 最初は完全に無音
-        gainNode.gain.setValueAtTime(
-            0,
-            audioContext.currentTime
+        console.log(
+            "Audio unlocked"
         );
 
     }
 
+    catch (error) {
 
-    // iPhoneなどでAudioContextが停止していたら再開
-    if (
-        audioContext.state === "suspended"
-    ) {
+        alarmSound.muted = false;
 
-        audioContext.resume().catch(
-            function (error) {
 
-                console.error(
-                    "AudioContextの再開に失敗しました。",
-                    error
-                );
-
-            }
+        console.error(
+            "音声の準備に失敗しました。",
+            error
         );
 
     }
@@ -144,7 +114,7 @@ function prepareAudio() {
 
 
 // ========================================
-// 秒数を設定
+// 秒数設定
 // ========================================
 
 setButton.addEventListener(
@@ -156,10 +126,6 @@ setButton.addEventListener(
                 secondsInput.value
             );
 
-
-        // ====================================
-        // 入力チェック
-        // ====================================
 
         if (
             !Number.isFinite(seconds) ||
@@ -175,7 +141,6 @@ setButton.addEventListener(
         }
 
 
-        // 小数点以下を切り捨て
         initialSeconds =
             Math.floor(seconds);
 
@@ -187,13 +152,11 @@ setButton.addEventListener(
         updateDisplay();
 
 
-        // 設定画面を非表示
         setupScreen.classList.add(
             "hidden"
         );
 
 
-        // タイマー画面を表示
         timerScreen.classList.remove(
             "hidden"
         );
@@ -203,7 +166,7 @@ setButton.addEventListener(
 
 
 // ========================================
-// カウントダウン表示更新
+// 表示更新
 // ========================================
 
 function updateDisplay() {
@@ -215,91 +178,33 @@ function updateDisplay() {
 
 
 // ========================================
-// 赤い大型ボタン
-//
-// 押すと
-//
-// 1. 今のタイマー停止
-// 2. アラーム停止
-// 3. 音声システム準備
-// 4. alarm.mp3を無音で再生開始
-// 5. 最初の秒数へ戻る
-// 6. カウントダウン開始
-//
+// 赤いボタン
 // ========================================
 
 startButton.addEventListener(
     "click",
-    function () {
+
+    async function () {
 
         // ====================================
-        // タイマー停止
+        // まず既存タイマーを停止
         // ====================================
 
         stopTimer();
 
 
         // ====================================
-        // 前回のアラーム停止
+        // 既存アラーム停止
         // ====================================
 
         stopAlarm();
 
 
         // ====================================
-        // iPhone対策
-        //
-        // 必ずユーザーが赤ボタンを
-        // 押した瞬間にAudioContextを作る
+        // iPhoneの音声再生許可を取る
         // ====================================
 
-        prepareAudio();
-
-
-        // ====================================
-        // 音を完全に無音にする
-        // ====================================
-
-        gainNode.gain.setValueAtTime(
-            0,
-            audioContext.currentTime
-        );
-
-
-        // ====================================
-        // MP3を最初に戻す
-        // ====================================
-
-        alarmSound.currentTime = 0;
-
-
-        // ====================================
-        // 赤ボタンを押した瞬間に
-        // 音声再生自体は開始する
-        //
-        // GainNode = 0なので音は聞こえない
-        // ====================================
-
-        const playPromise =
-            alarmSound.play();
-
-
-        if (
-            playPromise !== undefined
-        ) {
-
-            playPromise.catch(
-                function (error) {
-
-                    console.error(
-                        "アラーム音の準備に失敗しました。",
-                        error
-                    );
-
-                }
-            );
-
-        }
+        await unlockAudio();
 
 
         // ====================================
@@ -314,7 +219,7 @@ startButton.addEventListener(
 
 
         // ====================================
-        // 終了予定時刻
+        // 終了時刻
         // ====================================
 
         endTime =
@@ -330,13 +235,11 @@ startButton.addEventListener(
             setInterval(
                 function () {
 
-                    // 現在時刻との差
                     const millisecondsLeft =
                         endTime -
                         Date.now();
 
 
-                    // 残り秒数を計算
                     remainingSeconds =
                         Math.max(
                             0,
@@ -352,7 +255,7 @@ startButton.addEventListener(
 
 
                     // =================================
-                    // 0秒になった
+                    // 0秒
                     // =================================
 
                     if (
@@ -375,13 +278,9 @@ startButton.addEventListener(
 
 
 // ========================================
-// Pauseボタン
+// Pause
 //
-// 表示はPauseだが，実際にはReset
-//
-// ・タイマー停止
-// ・警告音停止
-// ・最初の秒数に戻す
+// 表示はPauseだがReset
 // ========================================
 
 resetButton.addEventListener(
@@ -424,43 +323,47 @@ function stopTimer() {
 
 
 // ========================================
-// 0秒になったとき
+// アラーム再生
 // ========================================
 
 function playAlarm() {
 
-    // ====================================
-    // MP3はすでに無音で再生中
-    //
-    // ここでは新しくplay()しない
-    // ====================================
-
-    if (
-        gainNode === null ||
-        audioContext === null
-    ) {
-
-        console.error(
-            "音声システムが準備されていません。"
-        );
-
-        return;
-
-    }
+    // 念のため一度停止
+    alarmSound.pause();
 
 
-    // アラームを最初から鳴らす
+    // 必ず音源の最初から
     alarmSound.currentTime = 0;
 
 
+    // mute解除
+    alarmSound.muted = false;
+
+
     // ====================================
-    // 音量を一気に上げる
+    // ここで初めて実際に音を鳴らす
     // ====================================
 
-    gainNode.gain.setValueAtTime(
-        1,
-        audioContext.currentTime
-    );
+    const playPromise =
+        alarmSound.play();
+
+
+    if (
+        playPromise !== undefined
+    ) {
+
+        playPromise.catch(
+            function (error) {
+
+                console.error(
+                    "アラームを再生できませんでした。",
+                    error
+                );
+
+            }
+        );
+
+    }
 
 }
 
@@ -471,29 +374,12 @@ function playAlarm() {
 
 function stopAlarm() {
 
-    // ====================================
-    // GainNodeが存在する場合
-    // まず完全に無音にする
-    // ====================================
-
-    if (
-        gainNode !== null &&
-        audioContext !== null
-    ) {
-
-        gainNode.gain.setValueAtTime(
-            0,
-            audioContext.currentTime
-        );
-
-    }
-
-
-    // MP3停止
     alarmSound.pause();
 
 
-    // 最初へ戻す
     alarmSound.currentTime = 0;
+
+
+    alarmSound.muted = false;
 
 }
