@@ -192,15 +192,13 @@ setButton.addEventListener(
 // ========================================
 // カウントダウン表示
 //
-// 表示は整数のみ
+// 小数点第2位まで表示
 // ========================================
 
 function updateDisplay() {
 
     countdown.textContent =
-        Math.ceil(
-            remainingSeconds
-        );
+        remainingSeconds.toFixed(2);
 
 }
 
@@ -342,7 +340,7 @@ startButton.addEventListener(
 
                 },
 
-                // 内部では細かく更新
+                // 約0.01秒ごとに更新
                 10
             );
 
