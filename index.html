@@ -34,11 +34,12 @@
             カウントダウンする秒数を入力してください
         </p>
 
+        <!-- 0.01秒単位で入力可能 -->
         <input
             id="secondsInput"
             type="number"
-            min="1"
-            step="1"
+            min="0.01"
+            step="0.01"
             placeholder="秒"
         >
 
@@ -60,7 +61,7 @@
 
         <!-- 残り秒数 -->
         <div id="countdown">
-            0
+            0.00
         </div>
 
 
@@ -70,7 +71,6 @@
 
         <div class="buttonAssembly">
 
-            <!-- 金属プレート -->
             <div class="metalPlate">
 
                 <!-- 4本のネジ -->
@@ -83,7 +83,7 @@
                 <!-- 黒いボタン台座 -->
                 <div class="buttonBezel">
 
-                    <!-- 赤いStartボタン -->
+                    <!-- Startボタン -->
                     <button
                         id="startButton"
                         class="startButton"

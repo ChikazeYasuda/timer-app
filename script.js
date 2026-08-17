@@ -47,7 +47,7 @@ let endTime = null;
 
 let audioContext = null;
 
-// alarm.mp3の音声データ
+// alarm.mp3 の音声データ
 let alarmBuffer = null;
 
 // 再生中または再生予約中のアラーム
@@ -76,12 +76,12 @@ const alarmDataPromise =
 
 
 // ========================================
-// アラームを使える状態にする
+// アラームを使用可能にする
 // ========================================
 
 async function prepareAlarm() {
 
-    // AudioContextを初回だけ作成
+    // AudioContextを初回のみ作成
     if (audioContext === null) {
 
         audioContext =
@@ -94,7 +94,6 @@ async function prepareAlarm() {
 
 
     // iPhone / Safari対策
-    // 赤ボタンを押したタイミングで有効化する
     if (
         audioContext.state === "suspended"
     ) {
@@ -104,7 +103,7 @@ async function prepareAlarm() {
     }
 
 
-    // alarm.mp3をまだ変換していなければ変換
+    // alarm.mp3をまだ変換していない場合
     if (alarmBuffer === null) {
 
         const arrayBuffer =
@@ -141,11 +140,11 @@ setButton.addEventListener(
 
         if (
             !Number.isFinite(seconds) ||
-            seconds < 1
+            seconds < 0.01
         ) {
 
             alert(
-                "1秒以上の値を入力してください。"
+                "0.01秒以上の値を入力してください。"
             );
 
             return;
@@ -155,10 +154,13 @@ setButton.addEventListener(
 
         // ====================================
         // 設定秒数
+        //
+        // Math.floorは使わない
+        // 小数をそのまま保存する
         // ====================================
 
         initialSeconds =
-            Math.floor(seconds);
+            seconds;
 
 
         remainingSeconds =
@@ -169,7 +171,7 @@ setButton.addEventListener(
 
 
         // ====================================
-        // 設定画面を消す
+        // 設定画面を非表示
         // ====================================
 
         setupScreen.classList.add(
@@ -192,7 +194,7 @@ setButton.addEventListener(
 // ========================================
 // カウントダウン表示
 //
-// 小数点第2位まで表示
+// 小数点第2位まで
 // ========================================
 
 function updateDisplay() {
@@ -206,8 +208,8 @@ function updateDisplay() {
 // ========================================
 // 赤い大型ボタン
 //
-// 押したら最初の秒数から
-// カウントダウン開始
+// 設定した秒数から
+// 最初からカウントダウン開始
 // ========================================
 
 startButton.addEventListener(
@@ -216,14 +218,14 @@ startButton.addEventListener(
     async function () {
 
         // ====================================
-        // 現在のタイマーを停止
+        // 現在のタイマー停止
         // ====================================
 
         stopTimer();
 
 
         // ====================================
-        // 現在または予約中のアラームを停止
+        // 現在または予約中のアラーム停止
         // ====================================
 
         stopAlarm();
@@ -279,7 +281,7 @@ startButton.addEventListener(
         // ====================================
         // アラームを予約
         //
-        // initialSeconds秒後に鳴る
+        // 設定秒数後に鳴る
         // ====================================
 
         scheduleAlarm(
@@ -296,7 +298,7 @@ startButton.addEventListener(
                 function () {
 
                     // =================================
-                    // 残り時間を計算
+                    // 残り時間
                     // =================================
 
                     const millisecondsLeft =
@@ -304,6 +306,7 @@ startButton.addEventListener(
                         Date.now();
 
 
+                    // 秒に変換
                     remainingSeconds =
                         Math.max(
                             0,
@@ -311,10 +314,7 @@ startButton.addEventListener(
                         );
 
 
-                    // =================================
                     // 表示更新
-                    // =================================
-
                     updateDisplay();
 
 
@@ -332,8 +332,8 @@ startButton.addEventListener(
                         updateDisplay();
 
 
-                        // 表示更新だけ停止
-                        // アラームはすでに予約されている
+                        // 表示更新のみ停止
+                        // アラームはすでに予約済み
                         stopTimer();
 
                     }
@@ -356,17 +356,11 @@ function scheduleAlarm(
     secondsUntilAlarm
 ) {
 
-    // ====================================
-    // 以前のアラームを停止
-    // ====================================
-
+    // 以前のアラーム停止
     stopAlarm();
 
 
-    // ====================================
-    // 新しい音源を作る
-    // ====================================
-
+    // 新しい音源を作成
     alarmSource =
         audioContext.createBufferSource();
 
@@ -375,17 +369,12 @@ function scheduleAlarm(
         alarmBuffer;
 
 
-    // ====================================
     // Pauseを押すまで繰り返す
-    // ====================================
+    alarmSource.loop =
+        true;
 
-    alarmSource.loop = true;
 
-
-    // ====================================
     // スピーカーへ接続
-    // ====================================
-
     alarmSource.connect(
         audioContext.destination
     );
@@ -401,7 +390,7 @@ function scheduleAlarm(
 
 
     // ====================================
-    // 指定秒数後に再生開始
+    // 指定した秒数後に再生
     // ====================================
 
     alarmSource.start(
@@ -414,11 +403,12 @@ function scheduleAlarm(
 // ========================================
 // Pauseボタン
 //
-// 表示はPauseだが，機能はReset
+// 表示はPause
+// 実際の動作はReset
 //
 // ・タイマー停止
 // ・アラーム停止
-// ・最初の秒数へ戻す
+// ・最初の設定秒数へ戻す
 // ========================================
 
 resetButton.addEventListener(
@@ -430,7 +420,7 @@ resetButton.addEventListener(
 
 
         // アラーム停止
-        // まだ鳴っていない予約もキャンセル
+        // 予約中のアラームもキャンセル
         stopAlarm();
 
 
@@ -479,7 +469,7 @@ function stopAlarm() {
 
         try {
 
-            // 再生中でも予約中でも停止できる
+            // 再生中でも予約中でも停止
             alarmSource.stop();
 
         }
